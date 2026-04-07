@@ -23,3 +23,5 @@ async function runMigration() {
         await pool.end()
     }
 }
+
+runMigration()

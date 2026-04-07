@@ -1,4 +1,6 @@
-export async function conversationMigrate(pool: any) {
+import { Pool } from "pg"
+
+export async function conversationMigrate(pool: Pool): Promise<void> {
 
     try {
         await pool.query(`
@@ -12,6 +14,7 @@ export async function conversationMigrate(pool: any) {
         `)
     } catch (error) {
         console.error(error)
+        throw error
 
     }
 

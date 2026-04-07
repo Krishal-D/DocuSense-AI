@@ -1,5 +1,6 @@
+import { Pool } from "pg"
 
-export async function chunkMigrate(pool: any) {
+export async function chunkMigrate(pool: Pool): Promise<void> {
     try {
         await pool.query(`
             CREATE TABLE IF NOT EXISTS chunks(
@@ -13,5 +14,6 @@ export async function chunkMigrate(pool: any) {
             `)
     } catch (error) {
         console.error(error)
+        throw error
     }
 }

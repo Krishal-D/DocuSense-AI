@@ -1,4 +1,6 @@
-export async function userMigrate(pool: any) {
+import { Pool } from "pg"
+
+export async function userMigrate(pool: Pool):Promise<void> {
     try {
         await pool.query(`
             CREATE TABLE IF NOT EXISTS users(
@@ -12,6 +14,7 @@ export async function userMigrate(pool: any) {
             `)
     } catch (error) {
         console.error(error)
+        throw error
 
     }
 }
