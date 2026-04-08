@@ -5,6 +5,7 @@ export interface User {
     password?: string;
     refresh_token?: string;
     created_at?: Date;
+    role: string;
 }
 
 export interface IUserModel {
@@ -13,4 +14,15 @@ export interface IUserModel {
     createUser(name: string, email: string, password: string): Promise<User>;
     updateRefreshToken(id: number, refresh_token: string): Promise<void>;
     removeRefreshToken(id: number): Promise<void>;
+    verifyRefreshToken(id: number, refreshToken: string): Promise<User | null>;
+}
+
+export interface AuthUser {
+    user: {
+        id: number,
+        name: string,
+        email: string
+    },
+    refreshToken: string;
+    accessToken: string;
 }
