@@ -56,11 +56,11 @@ export const documentController = {
 
     async deleteDocument(req: Request, res: Response, next: NextFunction) {
         try {
-            const { documentId } = req.body
+            const documentIdParam = req.params?.id
             const ownerId = req.user?.id
 
-            if (!documentId) {
-                return res.status(400).json({ message: "No document found" });
+            if (!documentIdParam) {
+                return res.status(400).json({ message: "Document id is required" });
 
             }
 
@@ -68,9 +68,13 @@ export const documentController = {
                 return res.status(401).json({ message: "Unauthorized" });
             }
 
-            const document = await documentService.deleteDocument(documentId, ownerId)
-        } catch (error) {
+            const documentId = Number(documentIdParam)
 
+            await documentService.deleteDocument(documentId, ownerId)
+
+            return res.status(200).json({ message: "Document deleted successfully" })
+        } catch (error) {
+            next(error)
         }
     }
 };

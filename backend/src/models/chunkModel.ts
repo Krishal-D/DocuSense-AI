@@ -4,11 +4,12 @@ import { Chunk, IChunkModel } from "../types";
 export const chunkModel: IChunkModel = {
 
     async insertChunk(chunkIdx: number, content: string, embedding: number[], documentId: number): Promise<Chunk> {
+        const embeddingVector = `[${embedding.join(",")}]`;
         const result = await pool.query(
             `INSERT INTO chunks(chunk_idx, content,embedding, document_id)
-             VALUES($1, $2, $3,$4)
+             VALUES($1, $2, $3::vector, $4)
              RETURNING *`,
-            [chunkIdx, content,embedding, documentId]
+            [chunkIdx, content, embeddingVector, documentId]
         );
         return result.rows[0];
     },

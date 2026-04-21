@@ -19,11 +19,11 @@ app.use(cors({
 }))
 app.use(express.json())
 app.use(cookieParser())
-app.use(errorHandler)
 
 
 app.use('/api/auth/', authRoute)
 app.use('/api/document/', documentRoute)
+app.use(errorHandler)
 
 app.listen(PORT, () => {
     console.log(`Server Running on port ${PORT} `)
