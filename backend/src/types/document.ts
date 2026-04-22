@@ -15,7 +15,7 @@ export interface DocumentWithUser {
     created_at: Date;
 }
 
-export type DocumentStatus = "pending" | "indexed" | "processing"|"failed";
+export type DocumentStatus = "pending" | "indexed" | "processing" | "failed";
 
 export interface IDocumentModel {
     uploadDocument(documentName: string, ownerId: number, status: DocumentStatus): Promise<Document | null>;
@@ -42,7 +42,16 @@ export interface Chunk {
     created_at: Date;
 }
 
+export interface ChunkSearchResult {
+    id: number;
+    content: string;
+    document_name: string;
+    document_id: number;
+    chunk_idx: number;
+}
+
 export interface IChunkModel {
     insertChunk(chunkIdx: number, content: string, embedding: number[], documentId: number): Promise<Chunk>;
     getChunksByDocument(documentId: number): Promise<Chunk[]>;
+    searchSimilarChunks(ownerId: number, embedding: number[]): Promise<ChunkSearchResult[]>
 }

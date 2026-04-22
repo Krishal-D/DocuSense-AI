@@ -1,5 +1,5 @@
 import { pool } from "../config/db";
-import { Chunk, IChunkModel } from "../types";
+import { Chunk, IChunkModel, ChunkSearchResult } from "../types";
 
 export const chunkModel: IChunkModel = {
 
@@ -20,5 +20,21 @@ export const chunkModel: IChunkModel = {
             [documentId]
         );
         return result.rows;
+    },
+
+    async searchSimilarChunks(ownerId: number, embedding: number[]): Promise<ChunkSearchResult[]> {
+        const embeddingVector = `[${embedding.join(",")}]`;
+
+        const result = await pool.query(`
+            SELECT c.content, c.id, c.document_id, c.chunk_idx, d.document_name
+            FROM chunks c
+            JOIN documents d ON c.document_id = d.id
+            WHERE d.owner_id = $1
+            ORDER BY c.embedding <=> $2::vector
+            LIMIT 5
+            `, [ownerId, embeddingVector])
+
+        return result.rows
+
     }
 }
