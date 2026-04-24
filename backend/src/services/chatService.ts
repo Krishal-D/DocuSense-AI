@@ -19,12 +19,20 @@ function notFoundError(message: string): Error {
 }
 
 export const chatService = {
-    async queryDocument(userQuery: unknown, ownerId: number | undefined): Promise<QueryResult> {
+    async queryDocument(userQuery: unknown, conversationId: unknown, ownerId: number | undefined): Promise<QueryResult> {
         if (!ownerId) throw authError();
 
         if (!userQuery || typeof userQuery !== "string" || !userQuery.trim()) {
             throw validationError("Question is required");
         }
+
+        const parsedConversationId = Number(conversationId);
+        if (!conversationId || isNaN(parsedConversationId)) {
+            throw validationError("Valid conversation ID is required");
+        }
+
+        const conversation = await chatModel.getConversationById(ownerId, parsedConversationId);
+        if (!conversation) throw notFoundError("Conversation not found");
 
         const [queryEmbedding] = await getEmbedding([userQuery]);
 
@@ -34,8 +42,12 @@ export const chatService = {
 
         const chunks = await chunkModel.searchSimilarChunks(ownerId, queryEmbedding);
 
+        await chatModel.createMessage(parsedConversationId, "user", userQuery.trim());
+
         if (!chunks.length) {
-            return { answer: "No relevant information found in your documents.", sources: [] };
+            const noInfoAnswer = "No relevant information found in your documents.";
+            await chatModel.createMessage(parsedConversationId, "assistant", noInfoAnswer);
+            return { answer: noInfoAnswer, sources: [] };
         }
 
         const topChunks = chunks.slice(0, 5);
@@ -45,6 +57,7 @@ export const chatService = {
             .join("\n\n");
 
         const answer = await generateAnswer(context, userQuery);
+        await chatModel.createMessage(parsedConversationId, "assistant", answer);
 
         return {
             answer,

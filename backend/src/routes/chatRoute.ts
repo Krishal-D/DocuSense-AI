@@ -5,7 +5,7 @@ import { authenticate } from "../middleware/auth";
 
 const router = express.Router()
 
-router.post('/query', authenticate, chatController.query)
+router.post('/conversations/:conversationId/query', authenticate, chatController.query)
 router.post('/conversations', authenticate, chatController.createConversation)
 router.get('/conversations', authenticate, chatController.getConversationsByUser)
 router.get('/documents/:documentId/conversations', authenticate, chatController.getConversationsByDocument)

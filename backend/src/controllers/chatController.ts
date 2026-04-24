@@ -4,10 +4,11 @@ import { chatService } from "../services/chatService";
 export const chatController = {
     async query(req: Request, res: Response, next: NextFunction) {
         try {
+            const conversationId = req.params.conversationId as string;
             const { question } = req.body;
             const ownerId = req.user?.id;
 
-            const result = await chatService.queryDocument(question, ownerId);
+            const result = await chatService.queryDocument(question, conversationId, ownerId);
             return res.status(200).json(result);
         } catch (error) {
             next(error);
