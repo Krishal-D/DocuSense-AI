@@ -42,6 +42,17 @@ export const documentModel: IDocumentModel = {
         return result.rowCount;
     },
 
+    async updateDocumentName(documentId: number, ownerId: number, documentName: string): Promise<Document | null> {
+        const result = await pool.query(`
+            UPDATE documents
+            SET document_name = $1
+            WHERE id = $2 AND owner_id = $3
+            RETURNING *
+            `, [documentName, documentId, ownerId])
+
+        return result.rows[0] || null
+    },
+
     async updateStatus(status: DocumentStatus, documentId: number):Promise<Document> {
         const result = await pool.query(`
            UPDATE documents

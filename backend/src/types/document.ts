@@ -21,6 +21,7 @@ export interface IDocumentModel {
     uploadDocument(documentName: string, ownerId: number, status: DocumentStatus): Promise<Document | null>;
     findDocumentByUser(documentId: number): Promise<DocumentWithUser[]>;
     deleteDocument(documentId: number, ownerId: number): Promise<number | null>;
+    updateDocumentName(documentId: number, ownerId: number, documentName: string): Promise<Document | null>;
     updateStatus(status: DocumentStatus, documentId: number): Promise<Document>
 }
 
