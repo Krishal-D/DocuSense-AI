@@ -19,8 +19,8 @@ export const chatController = {
             const { conversationName, documentId } = req.body;
             const ownerId = req.user?.id;
 
-            const { conversation } = await chatService.createConversation(conversationName, documentId, ownerId);
-            return res.status(201).json({ conversation });
+            const conversations = await chatService.createConversation(conversationName, documentId, ownerId);
+            return res.status(201).json({ conversation: conversations.conversation });
         } catch (error) {
             next(error);
         }
@@ -28,12 +28,12 @@ export const chatController = {
 
     async updateConversationName(req: Request, res: Response, next: NextFunction) {
         try {
-            const conversationId = req.params.id as string;
+            const conversationId = req.params.conversationId as string;
             const ownerId = req.user?.id;
             const { newName } = req.body;
 
-            const { conversation } = await chatService.updateConversationName(conversationId, ownerId, newName);
-            return res.status(200).json({ message: "Conversation updated successfully", newName: conversation.conversation_name });
+            const conversations = await chatService.updateConversationName(conversationId, ownerId, newName);
+            return res.status(200).json({ message: "Conversation updated successfully", newName: conversations.conversation.conversation_name });
         } catch (error) {
             next(error);
         }
@@ -43,8 +43,8 @@ export const chatController = {
         try {
             const ownerId = req.user?.id;
 
-            const { conversation } = await chatService.getConversationsByUser(ownerId);
-            return res.status(200).json({ conversation });
+            const conversations = await chatService.getConversationsByUser(ownerId);
+            return res.status(200).json({ conversations: conversations.conversation });
         } catch (error) {
             next(error);
         }
@@ -53,10 +53,10 @@ export const chatController = {
     async getConversationsByDocument(req: Request, res: Response, next: NextFunction) {
         try {
             const ownerId = req.user?.id;
-            const documentId = req.params.id as string;
+            const documentId = req.params.documentId as string;
 
-            const { conversation } = await chatService.getConversationsByDocument(ownerId, documentId);
-            return res.status(200).json({ conversation });
+            const conversations = await chatService.getConversationsByDocument(ownerId, documentId);
+            return res.status(200).json({ conversations: conversations.conversation });
         } catch (error) {
             next(error);
         }
@@ -65,10 +65,10 @@ export const chatController = {
     async getConversationById(req: Request, res: Response, next: NextFunction) {
         try {
             const ownerId = req.user?.id;
-            const conversationId = req.params.id as string;
+            const conversationId = req.params.conversationId as string;
 
-            const { conversation } = await chatService.getConversationById(ownerId, conversationId);
-            return res.status(200).json({ conversation });
+            const conversations = await chatService.getConversationById(ownerId, conversationId);
+            return res.status(200).json({ conversation: conversations.conversation });
         } catch (error) {
             next(error);
         }
@@ -76,7 +76,8 @@ export const chatController = {
 
     async createMessage(req: Request, res: Response, next: NextFunction) {
         try {
-            const { conversationId, role, messageContent } = req.body;
+            const conversationId = req.params.conversationId as string;
+            const { role, messageContent } = req.body;
             const ownerId = req.user?.id;
 
             const message = await chatService.createMessage(conversationId, role, messageContent, ownerId);
@@ -89,7 +90,7 @@ export const chatController = {
     async getMessagesByConversation(req: Request, res: Response, next: NextFunction) {
         try {
             const ownerId = req.user?.id;
-            const conversationId = req.params.id as string;
+            const conversationId = req.params.conversationId as string;
 
             const messages = await chatService.getMessagesByConversation(ownerId, conversationId);
             return res.status(200).json({ messages });

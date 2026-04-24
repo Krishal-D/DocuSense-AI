@@ -9,8 +9,8 @@ export const documentController = {
             const ownerId = req.user?.id;
             const pdfBuffer = req.file?.buffer;
 
-            const document = await documentService.uploadDocument(documentName, ownerId, status, pdfBuffer);
-            return res.status(201).json({ document: document.document, message: "File uploaded successfully" });
+            const documents = await documentService.uploadDocument(documentName, ownerId, status, pdfBuffer);
+            return res.status(201).json({ document: documents.document, message: "File uploaded successfully" });
         } catch (error) {
             next(error);
         }
