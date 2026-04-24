@@ -1,6 +1,7 @@
 import { pool } from "../config/db"
+import { IChatModel, Conversation, Message, MessageWithConversation, MessageRole } from "../types"
 
-export const chatModel = {
+export const chatModel: IChatModel = {
 
     async createConversation(conversationName: string, documentId: number, ownerId: number) {
         const result = await pool.query(`
@@ -48,7 +49,7 @@ export const chatModel = {
         return result.rows[0]
     },
 
-    async createMessage(conversationId: number, role: string, messageContent: string) {
+    async createMessage(conversationId: number, role: MessageRole, messageContent: string) {
         const result = await pool.query(`
             INSERT INTO messages(conversation_id,role,message_content)
             VALUES($1,$2,$3)

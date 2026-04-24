@@ -1,16 +1,32 @@
 import { getEmbedding } from "../utils/embedding";
 import { chunkModel } from "../models/chunkModel";
 import { generateAnswer } from "../utils/generate";
+import { chatModel } from "../models/chatModel";
+import { Conversation, Message, MessageWithConversation, MessageRole, QueryResult } from "../types";
+
+const VALID_ROLES: MessageRole[] = ["user", "assistant"];
+
+function authError(): Error {
+    return Object.assign(new Error("Unauthorized"), { status: 401 });
+}
+
+function validationError(message: string): Error {
+    return Object.assign(new Error(message), { status: 400 });
+}
+
+function notFoundError(message: string): Error {
+    return Object.assign(new Error(message), { status: 404 });
+}
 
 export const chatService = {
-    async queryDocument(userQuery: string, ownerId: number) {
+    async queryDocument(userQuery: unknown, ownerId: number | undefined): Promise<QueryResult> {
+        if (!ownerId) throw authError();
 
-        if (!userQuery || !userQuery.trim()) {
-            throw new Error("Query is empty");
+        if (!userQuery || typeof userQuery !== "string" || !userQuery.trim()) {
+            throw validationError("Question is required");
         }
 
         const [queryEmbedding] = await getEmbedding([userQuery]);
-
 
         if (!queryEmbedding) {
             throw new Error("Failed to generate query embedding");
@@ -19,19 +35,14 @@ export const chatService = {
         const chunks = await chunkModel.searchSimilarChunks(ownerId, queryEmbedding);
 
         if (!chunks.length) {
-            return {
-                answer: "No relevant information found in your documents.",
-                sources: []
-            }
+            return { answer: "No relevant information found in your documents.", sources: [] };
         }
 
         const topChunks = chunks.slice(0, 5);
 
         const context = topChunks
-            .map((c, i) =>
-                `Chunk ${i + 1} (Document: ${c.document_name}):\n${c.content}`
-            )
-            .join('\n\n');
+            .map((c, i) => `Chunk ${i + 1} (Document: ${c.document_name}):\n${c.content}`)
+            .join("\n\n");
 
         const answer = await generateAnswer(context, userQuery);
 
@@ -42,6 +53,96 @@ export const chatService = {
                 documentId: c.document_id,
                 chunkIndex: c.chunk_idx
             }))
+        };
+    },
+
+    async createConversation(conversationName: unknown, documentId: unknown, ownerId: number | undefined): Promise<{ conversation: Conversation }> {
+        if (!ownerId) throw authError();
+
+        if (!conversationName || typeof conversationName !== "string" || !conversationName.trim()) {
+            throw validationError("Conversation name is required");
         }
+
+        const parsedDocumentId = Number(documentId);
+        if (!documentId || isNaN(parsedDocumentId)) {
+            throw validationError("Valid document ID is required");
+        }
+
+        const conversation = await chatModel.createConversation(conversationName.trim(), parsedDocumentId, ownerId);
+        return { conversation };
+    },
+
+    async updateConversationName(conversationId: string | undefined, ownerId: number | undefined, newName: unknown): Promise<{ conversation: Conversation }> {
+        if (!ownerId) throw authError();
+
+        const parsedId = Number(conversationId);
+        if (!conversationId || isNaN(parsedId)) throw validationError("Valid conversation ID is required");
+
+        if (!newName || typeof newName !== "string" || !newName.trim()) {
+            throw validationError("New name is required");
+        }
+
+        const conversation = await chatModel.updateConversationName(parsedId, ownerId, newName.trim());
+        if (!conversation) throw notFoundError("Conversation not found");
+        return { conversation };
+    },
+
+    async getConversationsByUser(ownerId: number | undefined): Promise<{ conversation: Conversation[] }> {
+        if (!ownerId) throw authError();
+
+        const conversation = await chatModel.getConversationsByUser(ownerId);
+        return { conversation };
+    },
+
+    async getConversationsByDocument(ownerId: number | undefined, documentId: string | undefined): Promise<{ conversation: Conversation[] }> {
+        if (!ownerId) throw authError();
+
+        const parsedId = Number(documentId);
+        if (!documentId || isNaN(parsedId)) throw validationError("Valid document ID is required");
+
+        const conversation = await chatModel.getConversationsByDocument(ownerId, parsedId);
+        return { conversation };
+    },
+
+    async getConversationById(ownerId: number | undefined, conversationId: string | undefined): Promise<{ conversation: Conversation }> {
+        if (!ownerId) throw authError();
+
+        const parsedId = Number(conversationId);
+        if (!conversationId || isNaN(parsedId)) throw validationError("Valid conversation ID is required");
+
+        const conversation = await chatModel.getConversationById(ownerId, parsedId);
+        if (!conversation) throw notFoundError("Conversation not found");
+        return { conversation };
+    },
+
+    async createMessage(conversationId: unknown, role: unknown, messageContent: unknown, ownerId: number | undefined): Promise<Message> {
+        if (!ownerId) throw authError();
+
+        const parsedConversationId = Number(conversationId);
+        if (!conversationId || isNaN(parsedConversationId)) {
+            throw validationError("Valid conversation ID is required");
+        }
+
+        if (!role || !VALID_ROLES.includes(role as MessageRole)) {
+            throw validationError(`Role must be one of: ${VALID_ROLES.join(", ")}`);
+        }
+
+        if (!messageContent || typeof messageContent !== "string" || !messageContent.trim()) {
+            throw validationError("Message content is required");
+        }
+
+        const conversation = await chatModel.getConversationById(ownerId, parsedConversationId);
+        if (!conversation) throw notFoundError("Conversation not found");
+
+        return chatModel.createMessage(parsedConversationId, role as MessageRole, messageContent.trim());
+    },
+
+    async getMessagesByConversation(ownerId: number | undefined, conversationId: string | undefined): Promise<MessageWithConversation[]> {
+        if (!ownerId) throw authError();
+
+        const parsedId = Number(conversationId);
+        if (!conversationId || isNaN(parsedId)) throw validationError("Valid conversation ID is required");
+
+        return chatModel.getMessagesByConversation(ownerId, parsedId);
     }
 }

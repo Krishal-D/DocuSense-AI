@@ -4,3 +4,4 @@ export interface TokenPayload {
 }
 
 export * from './document';
+export * from './chat';
