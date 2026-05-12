@@ -30,3 +30,10 @@ export interface Source {
   documentId: number;
   chunkIndex: number;
 }
+
+export interface AuthContextType {
+  user: User | null
+  register: (name: string, email: string, password: string) => Promise<void>
+  login: (email: string, password: string) => Promise<void>
+  logout: () => Promise<void>
+}
