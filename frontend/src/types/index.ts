@@ -31,6 +31,11 @@ export interface Source {
   chunkIndex: number;
 }
 
+export interface QueryResult {
+    answer: string
+    sources: Source[]
+}
+
 export interface AuthContextType {
   user: User | null
   accessToken: string | null

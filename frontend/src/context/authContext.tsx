@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import { createContext, useState, useEffect } from "react";
 import type { ReactNode } from "react";
 import { authAPI } from "../api/auth";
 import type { AuthContextType, User } from "../types";
@@ -20,7 +20,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const data = await authAPI.register(name, email, password)
             setAccessToken(data.token)
             setUser(data.user)
-
+            localStorage.setItem('token', data.token)
+            localStorage.setItem('user', JSON.stringify(data.user))
             return data
 
         } catch (error) {
@@ -41,7 +42,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const data = await authAPI.login(email, password)
             setAccessToken(data.token)
             setUser(data.user)
-            
+            localStorage.setItem('token', data.token)
+            localStorage.setItem('user', JSON.stringify(data.user))
             return data
 
 
@@ -62,6 +64,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             await authAPI.logout()
             setAccessToken(null)
             setUser(null)
+            localStorage.removeItem('token')
+            localStorage.removeItem('user')
 
         } catch (error) {
             setError('Logout Failed')
@@ -83,6 +87,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
     }
 
+    useEffect(() => {
+        const savedToken = localStorage.getItem('token')
+        const savedUser = localStorage.getItem('user')
+        if (savedToken && savedUser) {
+            setAccessToken(savedToken)
+            setUser(JSON.parse(savedUser))
+        }
+    }, [])
 
     return (
         <AuthContext.Provider value={{

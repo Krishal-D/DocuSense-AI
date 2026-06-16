@@ -7,12 +7,12 @@ export interface Document {
 }
 
 export interface DocumentWithUser {
-    user_id: number;
-    user_name: string;
-    document_id: number;
-    document_name: string;
-    status: string;
-    created_at: Date;
+    id: number
+    document_name: string
+    status: DocumentStatus
+    owner_id: number
+    user_name: string
+    created_at: Date
 }
 
 export type DocumentStatus = "pending" | "indexed" | "processing" | "failed";

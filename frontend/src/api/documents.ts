@@ -9,11 +9,9 @@ export const documentAPI = {
 
     },
 
-    async findDocumentByUser(): Promise<Document[]> {
-
+    async findDocumentByUser(): Promise<{ document: Document[] }> {
         const res = await client.get('/documents/')
         return res.data
-
     },
 
     async deleteDocument(documentId: number): Promise<{ message: string }> {

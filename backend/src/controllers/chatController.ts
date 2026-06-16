@@ -21,6 +21,7 @@ export const chatController = {
             const ownerId = req.user?.id;
 
             const conversations = await chatService.createConversation(conversationName, documentId, ownerId);
+            console.log('body:', req.body)
             return res.status(201).json({ conversation: conversations.conversation });
         } catch (error) {
             next(error);

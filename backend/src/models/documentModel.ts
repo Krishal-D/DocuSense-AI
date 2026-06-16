@@ -15,21 +15,20 @@ export const documentModel: IDocumentModel = {
 
     async findDocumentByUser(ownerId: number): Promise<DocumentWithUser[]> {
         const result = await pool.query(`
-            SELECT 
-            u.name as user_name,
-            u.id as owner_id,
-            d.id as document_id,
-            d.document_name as document_name,
-            d.status as document_status,
-            d.created_at
-            FROM users u
-            INNER JOIN documents d on u.id=d.owner_id
-            WHERE u.id=$1
-            ORDER BY d.created_at DESC
-            `, [ownerId])
+        SELECT 
+        u.name as user_name,
+        u.id as owner_id,
+        d.id,
+        d.document_name,
+        d.status,
+        d.created_at
+        FROM users u
+        INNER JOIN documents d on u.id=d.owner_id
+        WHERE u.id=$1
+        ORDER BY d.created_at DESC
+        `, [ownerId])
 
         return result.rows
-
     },
 
     async deleteDocument(documentId: number, ownerId: number): Promise<number | null> {
@@ -53,7 +52,7 @@ export const documentModel: IDocumentModel = {
         return result.rows[0] || null
     },
 
-    async updateStatus(status: DocumentStatus, documentId: number):Promise<Document> {
+    async updateStatus(status: DocumentStatus, documentId: number): Promise<Document> {
         const result = await pool.query(`
            UPDATE documents
             SET status=$1

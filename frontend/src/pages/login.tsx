@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useAuth } from "../hooks/useAuth"
 import type { LoginFormData } from "../types/component"
 import { Link } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 
 export function Login() {
 
@@ -11,6 +12,8 @@ export function Login() {
         email: "",
         password: "",
     }
+
+    const navigate = useNavigate()
 
     const { login } = useAuth()
     const [form, setForm] = useState<LoginFormData>(initialForm)
@@ -32,7 +35,7 @@ export function Login() {
 
         try {
             await login(form.email, form.password)
-            setForm(initialForm)
+            navigate('/dashboard')
 
         } catch (err: any) {
             setError(err.response?.data?.message || 'Login failed')
