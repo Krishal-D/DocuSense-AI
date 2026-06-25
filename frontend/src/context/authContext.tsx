@@ -9,7 +9,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const [user, setUser] = useState<User | null>(null)
     const [error, setError] = useState<string | null>(null)
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(true)
     const [accessToken, setAccessToken] = useState<string | null>(null)
 
 
@@ -62,16 +62,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         try {
             await authAPI.logout()
+        } catch {
+        } finally {
             setAccessToken(null)
             setUser(null)
             localStorage.removeItem('token')
             localStorage.removeItem('user')
-
-        } catch (error) {
-            setError('Logout Failed')
-
-        } finally {
             setLoading(false)
+
         }
     }
 
@@ -94,6 +92,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setAccessToken(savedToken)
             setUser(JSON.parse(savedUser))
         }
+        setLoading(false)
     }, [])
 
     return (

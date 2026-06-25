@@ -4,15 +4,16 @@ import type { ReactNode } from "react";
 
 export function ProtectedRoute({ children }: { children: ReactNode }) {
 
-    const { user, accessToken, loading } = useAuth();
+    const { user, loading } = useAuth()
 
-    if (loading) {
-        return <p>Loading...</p>;
-    }
+    if (loading) return (
+        <div className="flex h-screen items-center justify-center bg-[#F8F7F4]">
+            <p className="text-[#8A8680] text-sm">Loading...</p>
+        </div>
+    )
 
-    if (!user || !accessToken) {
-        return <Navigate to="/login" replace />;
-    }
+    if (!user) return <Navigate to="/login" replace />
+
     return (
         <>
             {children}

@@ -13,5 +13,32 @@ client.interceptors.request.use((config) => {
     return config
 })
 
+client.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+        const original = error.config
+
+        if (error.response?.status === 401 && !original._retry) {
+            original._retry = true
+
+            try {
+                const res = await client.post('/auth/refresh')
+                const newToken = res.data.token
+
+                localStorage.setItem('token', newToken)
+                original.headers['Authorization'] = `Bearer ${newToken}`
+                return client(original)
+
+            } catch {
+                localStorage.removeItem('token')
+                localStorage.removeItem('user')
+                window.location.href = '/login'
+            }
+        }
+
+        return Promise.reject(error)
+    }
+)
+
 
 export default client
