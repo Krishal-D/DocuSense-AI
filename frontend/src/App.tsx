@@ -12,12 +12,29 @@ const App: React.FC = () => {
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      <Route path="/dashboard" element={
-        <ProtectedRoute>
-          <Dashboard />
-        </ProtectedRoute>
-      } />
-      <Route path="/" element={<Navigate to="/dashboard" replace />} />
+      <Route path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        } />
+      <Route path="/dashboard/document/:documentId"
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        } />
+      <Route path="/dashboard/document/:documentId/conversation/:conversationId"
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        } />
+      <Route path="/"
+        element={
+          <Navigate to="/dashboard"
+            replace />
+        } />
     </Routes>
 
   )

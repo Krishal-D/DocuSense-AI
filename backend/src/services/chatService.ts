@@ -2,6 +2,7 @@ import { getEmbedding } from "../utils/embedding";
 import { chunkModel } from "../models/chunkModel";
 import { generateAnswer } from "../utils/generate";
 import { chatModel } from "../models/chatModel";
+import { getCasualReply } from "../utils/casualReplies";
 import { authError, notFoundError, validationError } from '../utils/errors'
 import { Conversation, Message, MessageWithConversation, MessageRole, QueryResult } from "../types";
 
@@ -23,6 +24,23 @@ export const chatService = {
 
         const conversation = await chatModel.getConversationById(ownerId, parsedConversationId);
         if (!conversation) throw notFoundError("Conversation not found");
+
+        const casualReply = getCasualReply(userQuery);
+
+        if (casualReply) {
+            await chatModel.createMessage(parsedConversationId, "user", userQuery.trim());
+
+            await chatModel.createMessage(
+                parsedConversationId,
+                "assistant",
+                casualReply
+            );
+
+            return {
+                answer: casualReply,
+                sources: [],
+            };
+        }
 
         const [queryEmbedding] = await getEmbedding([userQuery]);
 

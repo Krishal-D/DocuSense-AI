@@ -11,7 +11,7 @@ interface Props {
     documentId: number
 }
 
-const ChatWindow = ({ conversationId, documentId }: Props) => {
+const ChatWindow = ({ conversationId }: Props) => {
     const { messages, loading, refetch } = useMessages(conversationId)
     const { sendQuery, loading: querying } = useChat()
     const [input, setInput] = useState('')

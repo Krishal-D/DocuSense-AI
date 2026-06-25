@@ -1,21 +1,36 @@
 import { useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 import Sidebar from '../components/layouts/SideBar'
 import EmptyState from '../components/ui/EmptyState'
 import ChatWindow from '../components/chat/ChatWindow'
 import { HiOutlineMenuAlt2 } from 'react-icons/hi'
 
 const Dashboard = () => {
-    const [selectedDocumentId, setSelectedDocumentId] = useState<number | null>(null)
-    const [selectedConversationId, setSelectedConversationId] = useState<number | null>(null)
+    const { documentId, conversationId } = useParams()
+    const navigate = useNavigate()
+
+    const [selectedDocumentId, setSelectedDocumentId] = useState<number | null>(
+        documentId ? Number(documentId) : null
+    )
+
+    const [selectedConversationId, setSelectedConversationId] = useState<number | null>(
+        conversationId ? Number(conversationId) : null
+    )
+
     const [sidebarOpen, setSidebarOpen] = useState(true)
 
     const handleSelectDocument = (id: number) => {
         setSelectedDocumentId(id)
         setSelectedConversationId(null)
+        navigate(`/dashboard/document/${id}`)
     }
 
     const handleSelectConversation = (id: number) => {
         setSelectedConversationId(id)
+
+        if (selectedDocumentId) {
+            navigate(`/dashboard/document/${selectedDocumentId}/conversation/${id}`)
+        }
     }
 
     return (
@@ -28,8 +43,8 @@ const Dashboard = () => {
                     onSelectConversation={handleSelectConversation}
                 />
             )}
+
             <main className="flex-1 overflow-hidden flex flex-col">
-                {/* Topbar */}
                 <div className="flex items-center p-3 border-b border-[#E5E2DC] bg-white">
                     <button
                         onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -38,11 +53,12 @@ const Dashboard = () => {
                         <HiOutlineMenuAlt2 className="w-5 h-5 text-[#8A8680]" />
                     </button>
                 </div>
+
                 <div className="flex-1 overflow-hidden">
-                    {selectedConversationId ? (
+                    {selectedConversationId && selectedDocumentId ? (
                         <ChatWindow
                             conversationId={selectedConversationId}
-                            documentId={selectedDocumentId!}
+                            documentId={selectedDocumentId}
                         />
                     ) : (
                         <EmptyState />
