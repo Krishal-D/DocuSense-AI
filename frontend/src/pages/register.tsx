@@ -1,72 +1,71 @@
-import Button from "../components/ui/Button"
-import Input from "../components/ui/input"
-import { useState } from "react"
-import { useAuth } from "../hooks/useAuth"
-import type { RegisterFormData } from "../types/component"
-import { Link } from "react-router-dom"
+import Button from "../components/ui/Button";
+import Input from "../components/ui/input";
+import { useState } from "react";
+import { useAuth } from "../hooks/useAuth";
+import type { RegisterFormData } from "../types/component";
+import { Link } from "react-router-dom";
 
 export function Register() {
-
     const initialForm: RegisterFormData = {
         name: "",
         email: "",
         password: "",
         confirmPassword: ""
-    }
+    };
 
-    const { register } = useAuth()
-    const [form, setForm] = useState<RegisterFormData>(initialForm)
-    const [error, setError] = useState<string | null>(null)
-    const [loading, setLoading] = useState(false)
+    const { register } = useAuth();
 
+    const [form, setForm] = useState<RegisterFormData>(initialForm);
+    const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target
-        setForm(prev => ({ ...prev, [name]: value }))
-    }
+        const { name, value } = e.target;
+        setForm(prev => ({ ...prev, [name]: value }));
+    };
 
-    const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
-        e.preventDefault()
-        setError(null)
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setError(null);
 
         if (form.password !== form.confirmPassword) {
-            setError('Passwords do not match')
-            return
+            setError('Passwords do not match');
+            return;
         }
 
-        setLoading(true)
+        setLoading(true);
 
         try {
-            await register(form.name, form.email, form.password)
-            setForm(initialForm)
-
+            await register(form.name, form.email, form.password);
+            // Optionally navigate to login or dashboard
         } catch (err: any) {
-            setError(err.response?.data?.message || 'Registration failed')
+            setError(err.response?.data?.message || 'Registration failed');
         } finally {
-            setLoading(false)
+            setLoading(false);
         }
-
-
-    }
-
+    };
 
     return (
-        <div className="flex flex-col min-h-screen justify-center items-center ">
+        <div className="flex flex-col min-h-screen justify-center items-center bg-[#F8F7F4]">
             <form
                 onSubmit={handleSubmit}
-                className="w-full max-w-md flex flex-col justify-center items-center bg-[#1A1A1A] p-8  gap-4 rounded-xl"
+                className="w-full max-w-md flex flex-col bg-white border border-[#E5E2DC] p-8 gap-6 rounded-xl shadow-sm"
             >
-                <h1 className="font-bold pb-4 text-center text-2xl">DocuSense <span className="text-indigo-500">AI</span></h1>
-
-                <h2 className="text-2xl text-center font-bold p-2">Create Account</h2>
-                <h3 className="text-sm text-zinc-400 mb-4">Start asking questions about your documents</h3>
+                <div className="flex flex-col items-center text-center mb-2">
+                    <h1 className="font-bold text-3xl text-[#1A1A1A]">
+                        DocuSense <span className="text-[#16A34A]">AI</span>
+                    </h1>
+                    <h2 className="text-2xl font-bold mt-4">Create Account</h2>
+                    <h3 className="text-sm text-[#8A8680] mt-1">
+                        Start asking questions about your documents
+                    </h3>
+                </div>
 
                 {error && (
-                    <p className="text-red-400 text-sm w-full text-center bg-red-950 p-2 rounded-lg">
+                    <p className="text-red-500 text-sm w-full text-center bg-red-50 border border-red-200 p-3 rounded-lg">
                         {error}
                     </p>
                 )}
-
 
                 <Input
                     id="name"
@@ -77,6 +76,7 @@ export function Register() {
                     value={form.name}
                     onChange={handleChange}
                 />
+
                 <Input
                     id="email"
                     name="email"
@@ -86,12 +86,13 @@ export function Register() {
                     value={form.email}
                     onChange={handleChange}
                 />
+
                 <Input
                     id="password"
                     name="password"
                     label="Password"
                     type="password"
-                    placeholder="********"
+                    placeholder="••••••••"
                     value={form.password}
                     onChange={handleChange}
                 />
@@ -101,27 +102,31 @@ export function Register() {
                     name="confirmPassword"
                     label="Confirm Password"
                     type="password"
-                    placeholder="********"
+                    placeholder="••••••••"
                     value={form.confirmPassword}
                     onChange={handleChange}
                 />
-                <p className="text-sm text-zinc-400">By creating an account, you agree to our <a href="#" className="text-indigo-500 transition-all duration-300 hover:underline">Terms of Service</a> and <a href="#" className="text-indigo-500 transition-all duration-300 hover:underline">Privacy Policy</a>.</p>
-                <Button type="submit" disabled={loading}>
-                    {loading ? 'Creating account...' : 'Register'}
+
+                <p className="text-xs text-[#8A8680] text-center">
+                    By creating an account, you agree to our{" "}
+                    <a href="#" className="text-[#16A34A] hover:underline">Terms of Service</a> and{" "}
+                    <a href="#" className="text-[#16A34A] hover:underline">Privacy Policy</a>.
+                </p>
+
+                <Button type="submit" disabled={loading} >
+                    {loading ? 'Creating account...' : 'Create Account'}
                 </Button>
-
-
             </form>
-            <p className="text-zinc-400 m-4">Already Have an account? {" "}
+
+            <p className="text-[#8A8680] m-4 text-sm">
+                Already have an account?{" "}
                 <Link
                     to="/login"
-                    className="text-indigo-500 hover:underline transition-all duration-300"
+                    className="text-[#16A34A] hover:underline font-medium"
                 >
                     Sign in
                 </Link>
             </p>
-
         </div>
-    )
-
+    );
 }

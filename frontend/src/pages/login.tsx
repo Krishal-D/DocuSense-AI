@@ -1,63 +1,61 @@
-import Button from "../components/ui/Button"
-import Input from "../components/ui/input"
-import { useState } from "react"
-import { useAuth } from "../hooks/useAuth"
-import type { LoginFormData } from "../types/component"
-import { Link } from "react-router-dom"
-import { useNavigate } from "react-router-dom"
+import Button from "../components/ui/Button";
+import Input from "../components/ui/input";
+import { useState } from "react";
+import { useAuth } from "../hooks/useAuth";
+import type { LoginFormData } from "../types/component";
+import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export function Login() {
-
     const initialForm: LoginFormData = {
         email: "",
         password: "",
-    }
+    };
 
-    const navigate = useNavigate()
+    const navigate = useNavigate();
+    const { login } = useAuth();
 
-    const { login } = useAuth()
-    const [form, setForm] = useState<LoginFormData>(initialForm)
-    const [error, setError] = useState<string | null>(null)
-    const [loading, setLoading] = useState(false)
-
+    const [form, setForm] = useState<LoginFormData>(initialForm);
+    const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target
-        setForm(prev => ({ ...prev, [name]: value }))
-    }
+        const { name, value } = e.target;
+        setForm(prev => ({ ...prev, [name]: value }));
+    };
 
-    const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
-        e.preventDefault()
-        setError(null)
-
-
-        setLoading(true)
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setError(null);
+        setLoading(true);
 
         try {
-            await login(form.email, form.password)
-            navigate('/dashboard')
-
+            await login(form.email, form.password);
+            navigate('/dashboard');
         } catch (err: any) {
-            setError(err.response?.data?.message || 'Login failed')
+            setError(err.response?.data?.message || 'Login failed');
         } finally {
-            setLoading(false)
+            setLoading(false);
         }
-
-
-    }
-
+    };
 
     return (
-        <div className="flex flex-col min-h-screen justify-center items-center ">
+        <div className="flex flex-col min-h-screen justify-center items-center bg-[#F8F7F4]">
             <form
                 onSubmit={handleSubmit}
-                className="w-full max-w-md flex flex-col justify-center items-center bg-[#1A1A1A] p-8  gap-4 rounded-xl"
+                className="w-full max-w-md flex flex-col bg-white border border-[#E5E2DC] p-8 gap-6 rounded-xl shadow-sm"
             >
-                <h1 className="font-bold pb-4 text-center text-2xl">DocuSense <span className="text-indigo-500">AI</span></h1>
-
+                <div className="flex flex-col items-center text-center mb-2">
+                    <h1 className="font-bold text-3xl text-[#1A1A1A]">
+                        DocuSense <span className="text-[#16A34A]">AI</span>
+                    </h1>
+                    <h3 className="text-sm text-[#8A8680] mt-2">
+                        Sign in to continue
+                    </h3>
+                </div>
 
                 {error && (
-                    <p className="text-red-400 text-sm w-full text-center bg-red-950 p-2 rounded-lg">
+                    <p className="text-red-500 text-sm w-full text-center bg-red-50 border border-red-200 p-3 rounded-lg">
                         {error}
                     </p>
                 )}
@@ -71,39 +69,40 @@ export function Login() {
                     value={form.email}
                     onChange={handleChange}
                 />
+
                 <Input
                     id="password"
                     name="password"
                     label="Password"
                     type="password"
-                    placeholder="********"
+                    placeholder="••••••••"
                     value={form.password}
                     onChange={handleChange}
                 />
 
-                <div className="flex justify-end w-full mb-2">
+                <div className="flex justify-end w-full">
                     <a
                         href="#"
-                        className="text-sm text-zinc-400 hover:text-indigo-400 transition-all duration-300"
+                        className="text-[#16A34A] hover:underline text-sm"
                     >
                         Forgot Password?
                     </a>
-                </div>                <Button type="submit" disabled={loading}>
+                </div>
+
+                <Button type="submit" disabled={loading} >
                     {loading ? 'Signing in...' : 'Sign In'}
                 </Button>
-
-
             </form>
-            <p className="text-zinc-400 m-4">
+
+            <p className="text-[#8A8680] m-4 text-sm">
                 Don't have an account?{" "}
                 <Link
                     to="/register"
-                    className="text-indigo-500 hover:underline transition-all duration-300"
+                    className="text-[#16A34A] hover:underline font-medium"
                 >
                     Register
                 </Link>
             </p>
         </div>
-    )
-
+    );
 }
