@@ -13,6 +13,7 @@ router.get('/conversations/:conversationId', authenticate, chatController.getCon
 router.put('/conversations/:conversationId', authenticate, chatController.updateConversationName)
 router.get('/conversations/:conversationId/messages', authenticate, chatController.getMessagesByConversation)
 router.post('/conversations/:conversationId/messages', authenticate, chatController.createMessage)
+router.delete('/conversations/:conversationId', authenticate, chatController.deleteConversation)
 
 
 

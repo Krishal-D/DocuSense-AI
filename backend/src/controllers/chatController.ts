@@ -99,5 +99,16 @@ export const chatController = {
         } catch (error) {
             next(error);
         }
+    },
+    async deleteConversation(req: Request, res: Response, next: NextFunction) {
+        try {
+            const conversationId = Number(req.params.conversationId)
+            const ownerId = req.user?.id
+            if (!ownerId) return res.status(401).json({ message: 'Unauthorized' })
+            await chatService.deleteConversation(ownerId, conversationId)
+            return res.status(200).json({ message: 'Deleted' })
+        } catch (error) {
+            next(error)
+        }
     }
 }
