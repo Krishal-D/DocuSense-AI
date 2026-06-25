@@ -10,13 +10,13 @@ export default function Input({
     onChange,
     disabled = false,
 }: InputProps) {
-    const baseStyle =
-        "w-full px-4 py-2 border rounded-xl border-neutral-700 outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50";
-
     return (
-        <div className="flex flex-col gap-2 w-full m-3">
+        <div className="flex flex-col gap-1.5 w-full">
             {label && (
-                <label htmlFor={id} className="text-sm font-medium text-zinc-50">
+                <label
+                    htmlFor={id}
+                    className="text-sm font-medium text-[#1A1A1A]"
+                >
                     {label}
                 </label>
             )}
@@ -29,8 +29,11 @@ export default function Input({
                 value={value}
                 onChange={onChange}
                 disabled={disabled}
-                className={baseStyle}
+                className="w-full px-4 py-3 bg-white border border-[#E5E2DC] rounded-xl 
+                           text-[#1A1A1A] placeholder-[#8A8680] outline-none 
+                           focus:border-[#16A34A] focus:ring-2 focus:ring-[#16A34A]/20 
+                           transition-all duration-200 disabled:opacity-50"
             />
         </div>
-    )
+    );
 }

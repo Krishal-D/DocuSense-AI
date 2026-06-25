@@ -8,18 +8,22 @@ export default function Button({
     disabled = false,
 }: ButtonProps) {
     const baseStyle =
-        "px-4 py-2 w-full rounded-xl font-medium transition disabled:opacity-50 disabled:cursor-not-allowed";
+        "px-4 py-3 w-full rounded-xl font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed";
 
     const variants = {
-        primary: "bg-indigo-500 text-white transition-all duration-300 hover:scale-95 hover:bg-indigo-600",
-        secondary: "bg-gray-200 text-black hover:bg-gray-300",
+        primary: "bg-[#16A34A] text-white hover:bg-[#15803d] active:scale-[0.985]",
+        secondary: "bg-gray-100 text-[#1A1A1A] hover:bg-gray-200",
         danger: "bg-red-600 text-white hover:bg-red-700",
     };
-    return (
-        <button type={type} onClick={onClick} disabled={disabled} className={`${baseStyle} ${variants[variant]}`}>
-            {children}
-        </button >
 
-        
-    )
+    return (
+        <button
+            type={type}
+            onClick={onClick}
+            disabled={disabled}
+            className={`${baseStyle} ${variants[variant]}`}
+        >
+            {children}
+        </button>
+    );
 }
