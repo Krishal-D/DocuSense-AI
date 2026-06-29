@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useDocuments } from '../../hooks/useDocuments'
 import { useConversations } from '../../hooks/useConversations'
 import type { Document, Conversation } from '../../types'
-import { HiOutlineDocument, HiOutlineUpload, HiOutlinePlus, HiOutlineChevronDown, HiOutlineChevronRight } from 'react-icons/hi'
+import { HiOutlineDocument, HiOutlineSparkles, HiOutlineUpload, HiOutlinePlus, HiOutlineChevronDown, HiOutlineChevronRight } from 'react-icons/hi'
 import { useAuth } from '../../hooks/useAuth'
 
 interface SidebarProps {
@@ -47,10 +47,17 @@ const Sidebar = ({
 
             {/* Logo */}
             <div className="p-5 border-b border-[#E5E2DC]">
-                <h1 className="font-bold text-lg text-[#1A1A1A]">
-                    DocuSense <span className="text-[#16A34A]">AI</span>
-                </h1>
-                <p className="text-xs text-[#8A8680] mt-0.5">{user?.name}</p>
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center">
+                        <HiOutlineSparkles className="w-4 h-4 text-[#16A34A]" />
+                    </div>
+                    <div>
+                        <h1 className="font-bold text-lg text-[#1A1A1A]">
+                            Cogni<span className="text-[#16A34A]">dex</span>
+                        </h1>
+                        <p className="text-xs text-[#8A8680]">{user?.name}</p>
+                    </div>
+                </div>
             </div>
 
             {/* Document list */}
