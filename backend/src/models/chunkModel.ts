@@ -41,7 +41,7 @@ export const chunkModel: IChunkModel = {
         return result.rows;
     },
 
-    async searchSimilarChunks(ownerId: number, embedding: number[]): Promise<ChunkSearchResult[]> {
+    async searchSimilarChunks(ownerId: number, documentId: number, embedding: number[]): Promise<ChunkSearchResult[]> {
         const embeddingVector = `[${embedding.join(",")}]`;
 
         const result = await pool.query(`
