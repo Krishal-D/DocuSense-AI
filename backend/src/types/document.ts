@@ -65,6 +65,7 @@ export interface IChunkModel {
 
     searchSimilarChunks(
         ownerId: number,
+        documentId: number,
         embedding: number[]
     ): Promise<ChunkSearchResult[]>;
 }

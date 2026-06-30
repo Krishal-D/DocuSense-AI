@@ -26,6 +26,17 @@ export const useDocuments = () => {
         formData.append('documentName', name)
         await documentAPI.uploadDocument(formData)
         await fetchDocuments()
+
+        const interval = setInterval(async () => {
+            const data = await documentAPI.findDocumentByUser()
+            const stillProcessing = data.document?.some(
+                (d: Document) => d.status === 'pending' || d.status === 'indexing'
+            )
+            setDocuments(data.document || [])
+            if (!stillProcessing) clearInterval(interval)
+        }, 2000)
+
+        setTimeout(() => clearInterval(interval), 30000)
     }
 
     const deleteDocument = async (id: number) => {

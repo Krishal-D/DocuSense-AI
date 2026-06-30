@@ -63,6 +63,7 @@ export const chatService = {
 
             chunks = await chunkModel.searchSimilarChunks(
                 ownerId,
+                documentId,
                 queryEmbedding
             );
 
